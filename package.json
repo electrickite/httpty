@@ -1,8 +1,8 @@
 {
   "name": "htty",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Web-based terminal emulator",
-  "main": "app.js",
+  "main": "server.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/electrickite/htty.git"

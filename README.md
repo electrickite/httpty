@@ -46,7 +46,7 @@ The following configuration options are available:
 
 Start the web server:
 
-    $ node app.js
+    $ node server.js
 
 And open the web terminal in a browser at [http://localhost:3000/](http://localhost:3000/)
 
