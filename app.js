@@ -1,10 +1,11 @@
-let config = require('config');
-let express = require('express');
-let http = require('http');
-let https = require('https');
-let path = require('path');
-let pty = require('node-pty');
-let server = require('socket.io');
+const config = require('config');
+const express = require('express');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const path = require('path');
+const pty = require('node-pty');
+const ws = require('socket.io');
 
 ['log', 'warn', 'error'].forEach(function(method) {
   var oldMethod = console[method].bind(console);
@@ -24,12 +25,22 @@ process.on('uncaughtException', function(e) {
 let app = express();
 app.use('/', express.static(path.join(__dirname, 'public')));
 
-let port = config.get('port');
-let httpserv = http.createServer(app).listen(port, function() {
-  console.log('HTTP server listening on port ' + port);
-});
+var server;
 
-let io = server(httpserv, {path: '/socket'});
+if (config.has('tls.cert') && config.has('tls.key')) {
+  server = https.createServer({
+    key: fs.readFileSync(config.get('tls.key')),
+    cert: fs.readFileSync(config.get('tls.cert'))
+  }, app).listen(config.get('port'), function() {
+    console.log('HTTPS server listening on port ' + config.get('port'));
+  });
+} else {
+  server = http.createServer(app).listen(config.get('port'), function() {
+    console.log('HTTP server listening on port ' + config.get('port'));
+  });
+}
+
+let io = ws(server, {path: '/socket'});
 
 io.on('connection', function(socket) {
   console.log('SID=%s CONNECTED', socket.id);

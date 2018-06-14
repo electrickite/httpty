@@ -4,8 +4,7 @@ Htty
 Htty (HTTP tty) provides a browser-based terminal emulator that connects to a
 pseudo tty (pty) interface via WebSockets.
 
-Requirements
-------------
+# Requirements
 
 A Unix-like operating system. Htty may work on other systems, but has not been
 tested. In addition, the following software is required:
@@ -15,21 +14,35 @@ tested. In addition, the following software is required:
   * [make][3]
   * [GCC][4] or other C/C++ compiler
 
-Installation
-------------
+# Installation
 
 Change to the project directory and install NPM dependencies:
 
     $ cd htty
     $ npm install
 
+## Configuration
+
 If needed, create a local configuration file to override the default settings:
 
     $ cp config/default.json config/local.json
     $ vi config/local.json
 
-Use
----
+The following configuration options are available:
+
+    {
+      "port": 3000,                    HTTP server port
+      "command": {
+        "path": "/bin/sh",             Path to executable command
+        "arguments": []                Array of arguments to pass to command
+      },
+      "tls": {
+        "cert": "/path/to/cert.pem",   Path to TLS certificate
+        "key": "/path/to/key.pem"      Path to TLS private key
+      }
+    }
+
+# Use
 
 Start the web server:
 
@@ -37,8 +50,7 @@ Start the web server:
 
 And open the web terminal in a browser at [http://localhost:3000/](http://localhost:3000/)
 
-Copyright and License
----------------------
+# Copyright and License
 
 Copyright 2018 Corey Hinshaw
 
