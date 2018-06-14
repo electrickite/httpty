@@ -42,6 +42,15 @@ The following configuration options are available:
       }
     }
 
+## Service
+
+Htty can be run as a systemd service. An example unit file is included. It can
+be installed with:
+
+    # cp htty.service /etc/systemd/system
+    # systemctl daemon-reload
+    # systemctl start htty.service
+
 # Use
 
 Start the web server:
