@@ -26,19 +26,21 @@ let app = express();
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 var server;
-
 if (config.has('tls.cert') && config.has('tls.key')) {
   server = https.createServer({
     key: fs.readFileSync(config.get('tls.key')),
     cert: fs.readFileSync(config.get('tls.cert'))
-  }, app).listen(config.get('port'), function() {
-    console.log('HTTPS server listening on port ' + config.get('port'));
-  });
+  }, app);
 } else {
-  server = http.createServer(app).listen(config.get('port'), function() {
-    console.log('HTTP server listening on port ' + config.get('port'));
-  });
+  server = http.createServer(app);
 }
+
+server.listen(config.get('port'), function() {
+  if (config.has('group')) { process.setgid(config.get('group')); }
+  if (config.has('user')) { process.setuid(config.get('user')); }
+  console.log('HTTP server listening on port %s', config.get('port'));
+  console.log('User: %s    Group: %s', process.getuid(), process.getgid());
+});
 
 let io = ws(server, {path: '/socket'});
 
@@ -58,7 +60,7 @@ io.on('connection', function(socket) {
 
   term.on('exit', function(code) {
     socket.emit('exit');
-    console.log("PID=" + term.pid + " EXITED")
+    console.log("PID=%s EXITED", term.pid)
   });
 
   socket.on('resize', function(data) {

@@ -31,6 +31,8 @@ If needed, create a local configuration file to override the default settings:
 The following configuration options are available:
 
     {
+      "user": "myuser",                The user for the server process
+      "group": "mygroup",              The group for the server process
       "port": 3000,                    HTTP server port
       "command": {
         "path": "/bin/sh",             Path to executable command
@@ -50,6 +52,10 @@ be installed with:
     # cp htty.service /etc/systemd/system
     # systemctl daemon-reload
     # systemctl start htty.service
+
+The application can (optionally) change its effective user and group after
+binding to a port. The `user` and `group` configuration settings control this
+behavior, and can accept either a user/group name or an ID.
 
 # Use
 
