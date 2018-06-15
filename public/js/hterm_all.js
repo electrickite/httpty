@@ -35,7 +35,7 @@
 // SOURCE FILE: libdot/js/lib.js
 // Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// found at https://chromium.googlesource.com/apps/libapps/+/master/hterm/LICENSE
 
 'use strict';
 

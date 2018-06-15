@@ -1,6 +1,6 @@
 {
   "name": "htty",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Web-based terminal emulator",
   "main": "server.js",
   "repository": {

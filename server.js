@@ -41,7 +41,7 @@ server.listen(config.get('port'), function() {
   if (config.has('group')) { process.setgid(config.get('group')); }
   if (config.has('user')) { process.setuid(config.get('user')); }
   console.log('HTTP server listening on port %s', config.get('port'));
-  console.log('Process PID=%s  GID=%s', process.getuid(), process.getgid());
+  console.log('Process UID=%s  GID=%s', process.getuid(), process.getgid());
 });
 
 let io = ws(server, {path: '/socket'});
