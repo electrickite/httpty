@@ -34,6 +34,7 @@ The following configuration options are available:
       "user": "myuser",                The user for the server process
       "group": "mygroup",              The group for the server process
       "port": 3000,                    HTTP server port
+      "timestamps": true,              Add timestamps to console messages
       "command": {
         "path": "/bin/sh",             Path to executable command
         "arguments": []                Array of arguments to pass to command

@@ -7,16 +7,18 @@ const path = require('path');
 const pty = require('node-pty');
 const ws = require('socket.io');
 
-['log', 'warn', 'error'].forEach(function(method) {
-  var oldMethod = console[method].bind(console);
-  console[method] = function() {
-    arguments[0] = new Date().toISOString() + ' [' + method.toUpperCase() + '] ' + arguments[0];
-    oldMethod.apply(
-      console,
-      Array.from(arguments)
-    );
-  };
-});
+if (config.get('timestamps')) {
+  ['log', 'warn', 'error'].forEach(function(method) {
+    var oldMethod = console[method].bind(console);
+    console[method] = function() {
+      arguments[0] = new Date().toISOString() + ' [' + method.toUpperCase() + '] ' + arguments[0];
+      oldMethod.apply(
+        console,
+        Array.from(arguments)
+      );
+    };
+  });
+}
 
 process.on('uncaughtException', function(e) {
   console.error(e);
@@ -39,7 +41,7 @@ server.listen(config.get('port'), function() {
   if (config.has('group')) { process.setgid(config.get('group')); }
   if (config.has('user')) { process.setuid(config.get('user')); }
   console.log('HTTP server listening on port %s', config.get('port'));
-  console.log('User: %s    Group: %s', process.getuid(), process.getgid());
+  console.log('Process PID=%s  GID=%s', process.getuid(), process.getgid());
 });
 
 let io = ws(server, {path: '/socket'});

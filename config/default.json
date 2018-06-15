@@ -1,5 +1,6 @@
 {
   "port": 3000,
+  "timestamps": true,
   "command": {
     "path": "/bin/sh",
     "arguments": []
