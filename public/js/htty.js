@@ -33,6 +33,8 @@ function bufferedWrite(data) {
 }
 
 socket.on('connect', function() {
+  console.log("Web socket connected. SID=%s", socket.id);
+
   lib.init(function() {
     hterm.defaultStorage = new lib.Storage.Local();
     term = new hterm.Terminal();
@@ -73,5 +75,5 @@ socket.on('exit', function() {
 });
 
 socket.on('disconnect', function() {
-  console.log("Socket.io connection closed");
+  console.log("Web socket disconnected.");
 });

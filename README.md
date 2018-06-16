@@ -31,8 +31,8 @@ If needed, create a local configuration file to override the default settings:
 The following configuration options are available:
 
     {
-      "user": "myuser",                The user for the server process
-      "group": "mygroup",              The group for the server process
+      "user": "myuser",                The user for the server process (optional)
+      "group": "mygroup",              The group for the server process (optional)
       "port": 3000,                    HTTP server port
       "timestamps": true,              Add timestamps to console messages
       "command": {
