@@ -3,10 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Web Terminal</title>
-  <script src="js/hterm_all.js"></script>
-  <script src="socket/socket.io.js"></script>
-  <script src="js/htty.js"></script>
+  <title>Internal Server Error</title>
   <style>
     html, body {
       height: 100%;
@@ -15,7 +12,11 @@
     }
     #terminal {
       background-color: #101010;
+      color: rgb(240, 240, 240);
       display: block;
+      font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, "Menlo", "Terminal", monospace;
+      font-size: 15px;
+      line-height: 18px;
       position: relative;
       width: 100%;
       height: 100%;
@@ -24,7 +25,10 @@
 </head>
 
 <body>
-  <div id="terminal"></div>
+  <div id="terminal">
+    Error 500<br>
+    Internal Server Error
+  </div>
 </body>
 
 </html>

@@ -20,12 +20,19 @@ if (config.get('timestamps')) {
   });
 }
 
-process.on('uncaughtException', function(e) {
-  console.error(e);
+process.on('uncaughtException', function(err) {
+  console.error(err.stack);
 });
 
 let app = express();
 app.use('/', express.static(path.join(__dirname, 'public')));
+app.use(function (req, res, next) {
+  res.status(404).sendFile(path.join(__dirname, 'public/404.html'));
+});
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).sendFile(path.join(__dirname, 'public/500.html'));
+});
 
 var server;
 if (config.has('tls.cert') && config.has('tls.key')) {
