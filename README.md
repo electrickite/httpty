@@ -40,7 +40,7 @@ The following configuration options are available:
         "key": "/path/to/key.pem"      Path to TLS private key
       },
       "terminal": {
-        "path": "/bin/sh",             Path to executable command
+        "command": "/bin/sh",          Path to executable command
         "args": []                     Array of arguments to pass to command
         "motd": "Hello, world!",       Message of the day to display on connect
       }

@@ -1,7 +1,7 @@
 const pty = require('node-pty');
 
 module.exports = function(socket, opts) {
-  var opts = Object.assign({path: "/bin/sh", args: []}, opts);
+  var opts = Object.assign({command: "/bin/sh", args: []}, opts);
 
   console.log('SID=%s CONNECTED', socket.id);
   if (opts.motd) { socket.emit('message', opts.motd); }
