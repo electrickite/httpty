@@ -65,6 +65,11 @@ socket.on('connect', function() {
   });
 });
 
+socket.on('message', function(data) {
+  bufferedWrite(data);
+  bufferedWrite("\r\n");
+});
+
 socket.on('output', function(data) {
   bufferedWrite(data);
 });

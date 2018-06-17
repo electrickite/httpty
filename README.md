@@ -31,17 +31,18 @@ If needed, create a local configuration file to override the default settings:
 The following configuration options are available:
 
     {
-      "user": "myuser",                The user for the server process (optional)
-      "group": "mygroup",              The group for the server process (optional)
-      "port": 3000,                    HTTP server port
       "timestamps": true,              Add timestamps to console messages
-      "command": {
-        "path": "/bin/sh",             Path to executable command
-        "arguments": []                Array of arguments to pass to command
-      },
-      "tls": {
+      "server": {
+        "user": "myuser",              The user for the server process (optional)
+        "group": "mygroup",            The group for the server process (optional)
+        "port": 3000,                  HTTP server port
         "cert": "/path/to/cert.pem",   Path to TLS certificate
         "key": "/path/to/key.pem"      Path to TLS private key
+      },
+      "terminal": {
+        "path": "/bin/sh",             Path to executable command
+        "args": []                     Array of arguments to pass to command
+        "motd": "Hello, world!",       Message of the day to display on connect
       }
     }
 
