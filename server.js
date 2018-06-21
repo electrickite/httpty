@@ -1,22 +1,17 @@
 const config = require('config');
-const ws = require('socket.io');
+
+const app = require('./server/app');
+const createHttpServer = require('./server/http');
+const createWebSocketServer = require('./server/wss');
+const timestamps = require('./server/timestamps');
 
 process.on('uncaughtException', function(err) {
   console.error(err.stack);
 });
 
-const app = require('./server/app');
-const createServer = require('./server/http');
-const initTerminal = require('./server/terminal');
-const timestamps = require('./server/timestamps');
-
 if (config.get('timestamps')) {
   timestamps.add();
 }
 
-let server = createServer(app, config.get('server'));
-let io = ws(server, {path: '/socket'});
-
-io.on('connection', function(socket) {
-  initTerminal(socket, config.get('terminal'));
-});
+const http = createHttpServer(app, config.get('server'));
+const wss = createWebSocketServer(http, config.get('client'));

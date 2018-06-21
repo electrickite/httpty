@@ -1,6 +1,13 @@
 var term;
-var socket = io(location.origin, {path: '/socket'})
+var ws = createWebSocket();
 var buf = '';
+var MSG = {
+  DATA: '00',
+  ERROR: '01',
+  ID: '02',
+  ALERT: '03',
+  RESIZE: '04'
+};
 
 function Htty(argv) {
   this.argv_ = argv;
@@ -17,11 +24,11 @@ Htty.prototype.run = function() {
 }
 
 Htty.prototype.sendString_ = function(str) {
-  socket.emit('input', str);
+  sendMessage(str, MSG.DATA);
 };
 
 Htty.prototype.onResize = function(col, row) {
-  socket.emit('resize', { col: col, row: row });
+  sendResize(col, row);
 };
 
 function bufferedWrite(data) {
@@ -32,8 +39,21 @@ function bufferedWrite(data) {
   term.io.writeUTF16(data);
 }
 
-socket.on('connect', function() {
-  console.log("Web socket connected. SID=%s", socket.id);
+function createWebSocket() {
+  var protocolPrefix = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+  return new WebSocket(protocolPrefix + '//' + location.host + '/ws');
+}
+
+function sendMessage(msg, type) {
+  ws.send(type + msg);
+}
+
+function sendResize(col, row) {
+  sendMessage(col + '|' + row, MSG.RESIZE);
+}
+
+ws.onopen = function() {
+  console.log("Web socket connected.");
 
   lib.init(function() {
     hterm.defaultStorage = new lib.Storage.Local();
@@ -51,11 +71,7 @@ socket.on('connect', function() {
     term.prefs_.set('cursor-blink', true)
 
     term.runCommandClass(Htty, document.location.hash.substr(1));
-    socket.emit('resize', {
-      col: term.screenSize.width,
-      row: term.screenSize.height
-    });
-
+    sendResize(term.screenSize.width, term.screenSize.height);
     term.io.println("Terminal connected");
 
     if (buf && buf != '') {
@@ -63,22 +79,38 @@ socket.on('connect', function() {
       buf = '';
     }
   });
-});
+};
 
-socket.on('message', function(data) {
-  bufferedWrite(data);
-  bufferedWrite("\r\n");
-});
+ws.onmessage = function(event) {
+  if (typeof event.data != 'string' || event.data.length < 2) {
+    console.error('Malformed message received: ' + event.data);
+    return;
+  }
 
-socket.on('output', function(data) {
-  bufferedWrite(data);
-});
+  var type = event.data.substring(0, 2);
+  var data = event.data.substring(2);
 
-socket.on('exit', function() {
+  switch(type) {
+    case MSG.DATA:
+      bufferedWrite(data);
+      break;
+    case MSG.ALERT:
+      bufferedWrite(data + "\r\n");
+      break;
+    case MSG.ID:
+      console.log('Client ID: ' + data);
+      break;
+    case MSG.ERROR:
+      console.error('ERROR: ' + data);
+      bufferedWrite(data + "\r\n");
+      break;
+    default:
+      console.error('Unknown message type: ' + type);
+  }
+};
+
+ws.onclose = function() {
   bufferedWrite("Terminal disconnected: refresh to reconnect\r\n");
-  socket.close();
-});
-
-socket.on('disconnect', function() {
   console.log("Web socket disconnected.");
-});
+  ws.close();
+};

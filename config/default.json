@@ -3,8 +3,9 @@
   "server": {
     "port": 3000
   },
-  "terminal": {
+  "client": {
     "command": "/bin/sh",
-    "args": []
+    "args": [],
+    "connections": 10
   }
 }

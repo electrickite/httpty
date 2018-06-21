@@ -2,7 +2,7 @@ Htty
 ====
 
 Htty (HTTP tty) provides a browser-based terminal emulator that connects to a
-pseudo tty (pty) interface via WebSockets.
+pseudo tty (pty) interface on the host via WebSockets.
 
 # Requirements
 
@@ -39,10 +39,12 @@ The following configuration options are available:
         "cert": "/path/to/cert.pem",   Path to TLS certificate
         "key": "/path/to/key.pem"      Path to TLS private key
       },
-      "terminal": {
-        "command": "/bin/sh",          Path to executable command
-        "args": []                     Array of arguments to pass to command
-        "motd": "Hello, world!",       Message of the day to display on connect
+      "client": {
+        "command": "/bin/sh",          Path to executable command for pty
+        "args": [],                    Array of arguments to pass to command
+        "connections": 10,             Connection limit
+        "ping": 60,                    Socket ping interval in seconds (0 disables pings)
+        "motd": "Hello, world!"        Message of the day to display on connect
       }
     }
 

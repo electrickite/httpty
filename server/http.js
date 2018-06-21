@@ -3,7 +3,7 @@ const http = require('http');
 const https = require('https');
 
 module.exports = function(app, opts) {
-  var opts = Object.assign({port: 3000}, opts);
+  opts = Object.assign({port: 3000}, opts);
   var server;
 
   if (opts.key && opts.cert) {
