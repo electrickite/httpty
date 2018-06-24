@@ -18,6 +18,12 @@ function Client(ws) {
 
   this.socket.on('message', this.receiveMessage.bind(this));
 
+  this.socket.on('error', function(err) {
+    console.error('CID=%s SOCKET ERROR', self.id);
+    console.error(err.stack);
+    self.socket.close();
+  });
+
   this.socket.on('close', function() {
     console.log('CID=%s DISCONNECTED', self.id);
     self.socket = null;

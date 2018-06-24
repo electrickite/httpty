@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Web Terminal</title>
-  <script src="js/app.min.js"></script>
   <style>
     html, body {
       height: 100%;
@@ -23,6 +22,11 @@
 
 <body>
   <div id="terminal"></div>
+  <script src="js/app.min.js"></script>
+  <script>
+    var htty = new Htty();
+    htty.start();
+  </script>
 </body>
 
 </html>

@@ -61,13 +61,36 @@ The application can (optionally) change its effective user and group after
 binding to a port. The `user` and `group` configuration settings control this
 behavior, and can accept either a user/group name or an ID.
 
-# Use
+## Use
 
 Start the web server:
 
     $ node server.js
 
 And open the web terminal in a browser at [http://localhost:3000/](http://localhost:3000/)
+
+# Message protocol
+
+Htty communicates over a web socket connection using a simple protocol.
+
+Web socket messages are sent as UTF-8 encoded strings with the following
+format:
+
+    (MESSAGE_TYPE)(MESSAGE_DATA)
+
+Where `(MESSAGE_TYPE)` is a two character message type identifer and
+`(MESSAGE_DATA)` is the data to be communicated.
+
+The message types are:
+
+  * `00` Data: text sent to or received from the tty interface
+  * `01` Error: indicates an error has occurred, message data contains the error message
+  * `02` ID: Message data contains the client ID number as assigned by the Htty server
+  * `03` Alert: Message data contains a notice or alert
+  * `04` Resize: Trigger terminal resize. Message data format: `COLUMNS|ROWS`
+
+A JavaScript client implementation is included with the Htty server project in
+`client/htty.js`.
 
 # Copyright and License
 

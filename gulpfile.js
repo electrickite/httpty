@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const concat = require('gulp-concat');
 const sourcemaps = require('gulp-sourcemaps');
 const uglify = require('gulp-uglify');
+const gutil = require('gulp-util')
 
 const paths = {
   src: { js: 'client/*.js' },
@@ -13,6 +14,7 @@ gulp.task('js', function() {
     .pipe(sourcemaps.init())
     .pipe(concat('app.min.js'))
     .pipe(uglify())
+    .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(paths.dest.js));
 });

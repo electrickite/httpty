@@ -1,7 +1,22 @@
-var term;
-var ws = createWebSocket();
-var buf = '';
-var MSG = {
+// Htty Web Terminal
+//
+
+function Htty(opts) {
+  opts = opts || {};
+
+  this.term = null;
+  this.ws = null;
+  this.elementId = opts.elementId || 'terminal';
+
+  if (opts.socketUrl) {
+    this.socketUrl = opts.socketUrl;
+  } else {
+    var protocolPrefix = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
+    this.socketUrl = protocolPrefix + '//' + location.host + '/ws';
+  }
+}
+
+Htty.MSG = {
   DATA: '00',
   ERROR: '01',
   ID: '02',
@@ -9,108 +24,122 @@ var MSG = {
   RESIZE: '04'
 };
 
-function Htty(argv) {
-  this.argv_ = argv;
-  this.io = null;
-  this.pid_ = -1;
-}
+// Create a terminal emulator
+// Start socket connection when terminal is ready
+Htty.prototype.start = function() {
+  hterm.defaultStorage = new lib.Storage.Local();
 
-Htty.prototype.run = function() {
-  this.io = this.argv_.io.push();
+  this.term = new hterm.Terminal();
+  this.term.onTerminalReady = this._createWebSocket.bind(this);
 
-  this.io.onVTKeystroke = this.sendString_.bind(this);
-  this.io.sendString = this.sendString_.bind(this);
-  this.io.onResize = this.onResize.bind(this);
-}
+  this.term.decorate(document.getElementById(this.elementId));
+  this.term.installKeyboard();
+  this.term.setCursorPosition(0, 0);
+  this.term.setCursorVisible(true);
 
-Htty.prototype.sendString_ = function(str) {
-  sendMessage(str, MSG.DATA);
+  this.term.prefs_.set('ctrl-c-copy', true);
+  this.term.prefs_.set('ctrl-v-paste', true);
+  this.term.prefs_.set('use-default-window-copy', true);
+  this.term.prefs_.set('enable-dec12', true);
+  this.term.prefs_.set('cursor-blink', true);
 };
 
-Htty.prototype.onResize = function(col, row) {
-  sendResize(col, row);
+// Close the connection
+Htty.prototype.end = function() {
+  this.ws.close();
 };
 
-function bufferedWrite(data) {
-  if (!term) {
-    buf += data;
+// Send line oof input to tty
+Htty.prototype.input = function(line) {
+  this._sendData(line + "\r");
+};
+
+// Write line of text to terminal
+Htty.prototype.output = function(str) {
+  this.term.io.println(str);
+};
+
+// Create web socket and event hanlers
+Htty.prototype._createWebSocket = function() {
+  var self = this;
+
+  if(typeof WebSocket != 'function') {
+    console.error('ReferenceError: WebSocket not defined');
+    this.output('Error: Your web browser does not support WebSockets!');
     return;
   }
-  term.io.writeUTF16(data);
-}
 
-function createWebSocket() {
-  var protocolPrefix = (window.location.protocol === 'https:') ? 'wss:' : 'ws:';
-  return new WebSocket(protocolPrefix + '//' + location.host + '/ws');
-}
+  this.ws = new WebSocket(this.socketUrl);
 
-function sendMessage(msg, type) {
-  ws.send(type + msg);
-}
+  this.ws.onopen = function() {
+    console.log("Web socket connected");
+    self._initTerminal();
+    self._sendResize(self.term.screenSize.width, self.term.screenSize.height);
+    self.output("Terminal connected");
+  };
 
-function sendResize(col, row) {
-  sendMessage(col + '|' + row, MSG.RESIZE);
-}
-
-ws.onopen = function() {
-  console.log("Web socket connected.");
-
-  lib.init(function() {
-    hterm.defaultStorage = new lib.Storage.Local();
-    term = new hterm.Terminal();
-    window.term = term;
-    term.decorate(document.getElementById('terminal'));
-    term.installKeyboard();
-
-    term.setCursorPosition(0, 0);
-    term.setCursorVisible(true);
-    term.prefs_.set('ctrl-c-copy', true);
-    term.prefs_.set('ctrl-v-paste', true);
-    term.prefs_.set('use-default-window-copy', true);
-    term.prefs_.set('enable-dec12', true);
-    term.prefs_.set('cursor-blink', true)
-
-    term.runCommandClass(Htty, document.location.hash.substr(1));
-    sendResize(term.screenSize.width, term.screenSize.height);
-    term.io.println("Terminal connected");
-
-    if (buf && buf != '') {
-      term.io.writeUTF16(buf);
-      buf = '';
+  this.ws.onmessage = function(event) {
+    if (typeof event.data != 'string' || event.data.length < 2) {
+      console.error('Malformed message received: ' + event.data);
+      return;
     }
-  });
+
+    var type = event.data.substring(0, 2);
+    var data = event.data.substring(2);
+
+    switch(type) {
+      case Htty.MSG.DATA:
+        self.term.io.writeUTF16(data);
+        break;
+      case Htty.MSG.ALERT:
+        self.output(data);
+        break;
+      case Htty.MSG.ID:
+        console.log('Client ID: ' + data);
+        break;
+      case Htty.MSG.ERROR:
+        console.error('ERROR: ' + data);
+        self.output(data);
+        break;
+      default:
+        console.error('Unknown message type: ' + type);
+    }
+  };
+
+  this.ws.onerror = function(err) {
+    console.error('Web socket connection error:');
+    console.error(err);
+    self.output('Socket error!');
+    self.ws.close();
+  };
+
+  this.ws.onclose = function() {
+    self.output("Terminal disconnected: refresh to reconnect");
+    console.log("Web socket disconnected."); 
+    self.ws.close();
+  };
 };
 
-ws.onmessage = function(event) {
-  if (typeof event.data != 'string' || event.data.length < 2) {
-    console.error('Malformed message received: ' + event.data);
-    return;
-  }
+// Configure terminal event handlers
+Htty.prototype._initTerminal = function() {
+  var io = this.term.io.push();
 
-  var type = event.data.substring(0, 2);
-  var data = event.data.substring(2);
-
-  switch(type) {
-    case MSG.DATA:
-      bufferedWrite(data);
-      break;
-    case MSG.ALERT:
-      bufferedWrite(data + "\r\n");
-      break;
-    case MSG.ID:
-      console.log('Client ID: ' + data);
-      break;
-    case MSG.ERROR:
-      console.error('ERROR: ' + data);
-      bufferedWrite(data + "\r\n");
-      break;
-    default:
-      console.error('Unknown message type: ' + type);
-  }
+  io.onVTKeystroke = this._sendData.bind(this);
+  io.sendString = this._sendData.bind(this);
+  io.onTerminalResize = this._sendResize.bind(this);
 };
 
-ws.onclose = function() {
-  bufferedWrite("Terminal disconnected: refresh to reconnect\r\n");
-  console.log("Web socket disconnected.");
-  ws.close();
+// Encode and send message over socket
+Htty.prototype._sendMessage = function(msg, type) {
+  this.ws.send(type + msg);
+};
+
+// Send raw input data to tty over socket
+Htty.prototype._sendData = function(data) {
+  this._sendMessage(data, Htty.MSG.DATA);
+};
+
+// Send terminal resize message over socket
+Htty.prototype._sendResize = function(col, row) {
+  this._sendMessage(col + '|' + row, Htty.MSG.RESIZE);
 };
