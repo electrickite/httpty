@@ -1,0 +1,39 @@
+## Htty default configuration file ##
+
+# Add timestamps to console messages
+timestamps = true
+
+
+## Server configuration options ##
+[server]
+
+# HTTP server port
+port = 3000
+
+# The user and group for the server process (optional)
+#user = "myuser"
+#group = "mygroup"
+
+# Path to the TLS certificate and key
+# (optional, enables HTTPS and WSS)
+#key = "/path/to/cert.pem"
+#cert = "/path/to/key.pem"
+
+
+## Client configuration options ##
+[client]
+
+# Path to executable command (on host) for pty
+command = "/bin/sh"
+
+# Array of arguments to pass to pty executable
+args = []
+
+# Connection limit
+connections = 10
+
+# Socket ping interval in seconds (0 disables pings)
+ping = 60
+
+# Message of the day to display on connect (optional)
+#motd = "Welcome!"
