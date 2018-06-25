@@ -1,18 +1,18 @@
-# Htty systemd unit file
+# HttPty systemd unit file
 
 [Unit]
-Description=Htty Web Terminal
+Description=HttPty Web Terminal
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/htty
+WorkingDirectory=/opt/httpty
 ExecStart=/usr/bin/node server.js
 Restart=on-failure
 RestartSec=10
 Environment=NODE_ENV=production
-#User=htty
-#Group=htty
+#User=httpty
+#Group=httpty
 
 [Install]
 WantedBy=multi-user.target

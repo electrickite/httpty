@@ -1,18 +1,18 @@
 {
-  "name": "htty",
-  "version": "1.1.1",
+  "name": "httpty",
+  "version": "1.2.0",
   "description": "Web-based terminal emulator",
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electrickite/htty.git"
+    "url": "git+https://github.com/electrickite/httpty.git"
   },
   "author": "electrickite",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electrickite/htty/issues"
+    "url": "https://github.com/electrickite/httpty/issues"
   },
-  "homepage": "https://github.com/electrickite/htty",
+  "homepage": "https://github.com/electrickite/httpty",
   "dependencies": {
     "config": "^1.30.0",
     "express": "^4.16.3",

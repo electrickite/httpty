@@ -1,12 +1,12 @@
-Htty
-====
+HttPty
+======
 
-Htty (HTTP tty) provides a browser-based terminal emulator that connects to a
+HttPty (HTTP pty) provides a browser-based terminal emulator that connects to a
 pseudo tty (pty) interface on the host via WebSockets.
 
 # Requirements
 
-A Unix-like operating system. Htty may work on other systems, but has not been
+A Unix-like operating system. HttPty may work on other systems, but has not been
 tested. In addition, the following software is required:
 
   * [Node.js][1] v10+
@@ -18,7 +18,7 @@ tested. In addition, the following software is required:
 
 Change to the project directory and install NPM dependencies:
 
-    $ cd htty
+    $ cd httpty
     $ npm install
 
 ## Configuration
@@ -45,12 +45,12 @@ environment variables. Ex:
 
 ## Service
 
-Htty can be run as a systemd service. An example unit file is included. It can
+HttPty can be run as a systemd service. An example unit file is included. It can
 be installed with:
 
-    # cp htty.service /etc/systemd/system
+    # cp httpty.service /etc/systemd/system
     # systemctl daemon-reload
-    # systemctl start htty.service
+    # systemctl start httpty.service
 
 The application can (optionally) change its effective user and group after
 binding to a port. The `user` and `group` configuration settings control this
@@ -66,10 +66,9 @@ And open the web terminal in a browser at [http://localhost:3000/](http://localh
 
 # Message protocol
 
-Htty communicates over a web socket connection using a simple protocol.
+HttPty communicates over a web socket connection using a simple protocol.
 
-Web socket messages are sent as UTF-8 encoded strings with the following
-format:
+WebSocket messages are sent as UTF-8 encoded strings with the following format:
 
     (MESSAGE_TYPE)(MESSAGE_DATA)
 
@@ -80,18 +79,18 @@ The message types are:
 
   * `00` Data: text sent to or received from the tty interface
   * `01` Error: indicates an error has occurred, message data contains the error message
-  * `02` ID: Message data contains the client ID number as assigned by the Htty server
+  * `02` ID: Message data contains the client ID number as assigned by the HttPty server
   * `03` Alert: Message data contains a notice or alert
   * `04` Resize: Trigger terminal resize. Message data format: `COLUMNS|ROWS`
 
-A JavaScript client implementation is included with the Htty server project in
-`client/htty.js`.
+A JavaScript client implementation is included with the HttPty server project in
+`client/httpty.js`.
 
 # Copyright and License
 
 Copyright 2018 Corey Hinshaw
 
-Htty is made available under the terms of the MIT license, the full text of
+HttPty is made available under the terms of the MIT license, the full text of
 which can be found in the LICENSE file.
 
 

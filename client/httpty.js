@@ -1,7 +1,7 @@
-// Htty Web Terminal
+// HttPty Web Terminal
 //
 
-function Htty(opts) {
+function HttPty(opts) {
   opts = opts || {};
 
   this.term = null;
@@ -16,7 +16,7 @@ function Htty(opts) {
   }
 }
 
-Htty.MSG = {
+HttPty.MSG = {
   DATA: '00',
   ERROR: '01',
   ID: '02',
@@ -26,7 +26,7 @@ Htty.MSG = {
 
 // Create a terminal emulator
 // Start socket connection when terminal is ready
-Htty.prototype.start = function() {
+HttPty.prototype.start = function() {
   hterm.defaultStorage = new lib.Storage.Local();
 
   this.term = new hterm.Terminal();
@@ -45,22 +45,22 @@ Htty.prototype.start = function() {
 };
 
 // Close the connection
-Htty.prototype.end = function() {
+HttPty.prototype.end = function() {
   this.ws.close();
 };
 
 // Send line of input to tty
-Htty.prototype.input = function(line) {
+HttPty.prototype.input = function(line) {
   this._sendData(line + "\r");
 };
 
 // Write line of text to terminal
-Htty.prototype.output = function(str) {
+HttPty.prototype.output = function(str) {
   this.term.io.println(str);
 };
 
 // Create web socket and event hanlers
-Htty.prototype._createWebSocket = function() {
+HttPty.prototype._createWebSocket = function() {
   var self = this;
 
   if(typeof WebSocket != 'function') {
@@ -88,16 +88,16 @@ Htty.prototype._createWebSocket = function() {
     var data = event.data.substring(2);
 
     switch(type) {
-      case Htty.MSG.DATA:
+      case HttPty.MSG.DATA:
         self.term.io.writeUTF16(data);
         break;
-      case Htty.MSG.ALERT:
+      case HttPty.MSG.ALERT:
         self.output(data);
         break;
-      case Htty.MSG.ID:
+      case HttPty.MSG.ID:
         console.log('Client ID: ' + data);
         break;
-      case Htty.MSG.ERROR:
+      case HttPty.MSG.ERROR:
         console.error('ERROR: ' + data);
         self.output(data);
         break;
@@ -115,13 +115,13 @@ Htty.prototype._createWebSocket = function() {
 
   this.ws.onclose = function() {
     self.output("Terminal disconnected: refresh to reconnect");
-    console.log("Web socket disconnected."); 
+    console.log("Web socket disconnected.");
     self.ws.close();
   };
 };
 
 // Configure terminal event handlers
-Htty.prototype._initTerminal = function() {
+HttPty.prototype._initTerminal = function() {
   var io = this.term.io.push();
 
   io.onVTKeystroke = this._sendData.bind(this);
@@ -130,16 +130,16 @@ Htty.prototype._initTerminal = function() {
 };
 
 // Encode and send message over socket
-Htty.prototype._sendMessage = function(msg, type) {
+HttPty.prototype._sendMessage = function(msg, type) {
   this.ws.send(type + msg);
 };
 
 // Send raw input data to tty over socket
-Htty.prototype._sendData = function(data) {
-  this._sendMessage(data, Htty.MSG.DATA);
+HttPty.prototype._sendData = function(data) {
+  this._sendMessage(data, HttPty.MSG.DATA);
 };
 
 // Send terminal resize message over socket
-Htty.prototype._sendResize = function(col, row) {
-  this._sendMessage(col + '|' + row, Htty.MSG.RESIZE);
+HttPty.prototype._sendResize = function(col, row) {
+  this._sendMessage(col + '|' + row, HttPty.MSG.RESIZE);
 };
