@@ -14,7 +14,13 @@ module.exports = function(http, opts) {
   opts.ping = parseInt(opts.ping);
 
 
-  var wss = new WebSocket.Server({ server: http, path: '/ws' });
+  let wss = new WebSocket.Server({
+    server: http,
+    path: '/ws',
+    handleProtocols: function(protocols) {
+      return 'httpty';
+    }
+  });
 
   wss.on('connection', function(ws) {
     var client = new Client(ws);

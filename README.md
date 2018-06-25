@@ -1,8 +1,9 @@
 HttPty
 ======
 
-HttPty (HTTP pty) provides a browser-based terminal emulator that connects to a
-pseudo tty (pty) interface on the host via WebSockets.
+HttPty (HTTP pty) enables connections to pseudo tty (pty) interfaces on the host
+system via WebSockets. It also provides a browser-based terminal emulator and
+client implementation.
 
 # Requirements
 
@@ -33,7 +34,7 @@ See `config/default.toml` for the complete list of configuration options.
 
 ### Environment variables
 
-Setting the `NODE_ENV` environment variable will cause an additional
+Setting the `NODE_ENV` environment variable will cause a corresponding
 configuration file to be read. Eg, `NODE_ENV=production` will load
 `config/production.toml`.
 
@@ -64,24 +65,29 @@ Start the web server:
 
 And open the web terminal in a browser at [http://localhost:3000/](http://localhost:3000/)
 
-# Message protocol
+# WebSocket subprotocol
 
-HttPty communicates over a web socket connection using a simple protocol.
+HttPty communicates using WebSockets via a simple subprotocol called`httpty`.
+The HttPty server will only respond with a `Sec-WebSocket-Protocol` header for
+this subprotocol.
 
-WebSocket messages are sent as UTF-8 encoded strings with the following format:
+Messages are sent as UTF-8 encoded text with the following format:
 
-    (MESSAGE_TYPE)(MESSAGE_DATA)
+    (MESSAGE_TYPE)(MESSAGE_TEXT)
 
 Where `(MESSAGE_TYPE)` is a two character message type identifer and
-`(MESSAGE_DATA)` is the data to be communicated.
+`(MESSAGE_TEXT)` is the data to be communicated.
 
 The message types are:
 
-  * `00` Data: text sent to or received from the tty interface
-  * `01` Error: indicates an error has occurred, message data contains the error message
-  * `02` ID: Message data contains the client ID number as assigned by the HttPty server
-  * `03` Alert: Message data contains a notice or alert
-  * `04` Resize: Trigger terminal resize. Message data format: `COLUMNS|ROWS`
+  * `00` Data: text sent to or received from the pty interface
+  * `01` Error: indicates an error has occurred, message text contains the error message
+  * `02` ID: Message text contains the client ID as assigned by the HttPty server
+  * `03` Alert: Message text contains an out-of-band notice or alert
+  * `04` Resize: Trigger terminal resize. Message text format: `COLUMNS|ROWS`
+
+The server responds to message types 00, 01, and 04. Clients can receive 00, 01,
+02, and 03.
 
 A JavaScript client implementation is included with the HttPty server project in
 `client/httpty.js`.

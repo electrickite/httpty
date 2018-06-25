@@ -1,4 +1,5 @@
-// HttPty Web Terminal
+// HttPty Client
+// Requires Chromium hterm: https://chromium.googlesource.com/apps/libapps/+/master/hterm
 //
 
 function HttPty(opts) {
@@ -69,7 +70,7 @@ HttPty.prototype._createWebSocket = function() {
     return;
   }
 
-  this.ws = new WebSocket(this.socketUrl);
+  this.ws = new WebSocket(this.socketUrl, ['httpty']);
 
   this.ws.onopen = function() {
     console.log("Web socket connected");
@@ -107,15 +108,15 @@ HttPty.prototype._createWebSocket = function() {
   };
 
   this.ws.onerror = function(err) {
-    console.error('Web socket connection error:');
+    console.error('WebSocket connection error:');
     console.error(err);
-    self.output('Socket error!');
-    self.ws.close();
+    self.output('WebSocket connection error!');
   };
 
-  this.ws.onclose = function() {
-    self.output("Terminal disconnected: refresh to reconnect");
-    console.log("Web socket disconnected.");
+  this.ws.onclose = function(event) {
+    self.output('Terminal disconnected: refresh to reconnect');
+    console.log('WebSocket connection closed:');
+    console.log(event);
     self.ws.close();
   };
 };
