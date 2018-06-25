@@ -23,30 +23,25 @@ Change to the project directory and install NPM dependencies:
 
 ## Configuration
 
-If needed, create a local configuration file to override the default settings:
+If needed, create a [TOML][5] configuration file to override the default
+settings:
 
-    $ cp config/default.json config/local.json
-    $ vi config/local.json
+    $ cp config/default.toml config/local.toml
+    $ vi config/local.toml
 
-The following configuration options are available:
+See `config/default.toml` for the complete list of configuration options.
 
-    {
-      "timestamps": true,              Add timestamps to console messages
-      "server": {
-        "user": "myuser",              The user for the server process (optional)
-        "group": "mygroup",            The group for the server process (optional)
-        "port": 3000,                  HTTP server port
-        "cert": "/path/to/cert.pem",   Path to TLS certificate
-        "key": "/path/to/key.pem"      Path to TLS private key
-      },
-      "client": {
-        "command": "/bin/sh",          Path to executable command for pty
-        "args": [],                    Array of arguments to pass to command
-        "connections": 10,             Connection limit
-        "ping": 60,                    Socket ping interval in seconds (0 disables pings)
-        "motd": "Hello, world!"        Message of the day to display on connect
-      }
-    }
+### Environment variables
+
+Setting the `NODE_ENV` environment variable will cause an additional
+configuration file to be read. Eg, `NODE_ENV=production` will load
+`config/production.toml`.
+
+Configuration options will also be read from the environment. See
+`config/custom-environment-variables.toml` for the list of available
+environment variables. Ex:
+
+    PORT=8000 CMD_PATH=/bin/zsh node server.js
 
 ## Service
 
@@ -104,3 +99,4 @@ which can be found in the LICENSE file.
 [2]: https://www.python.org
 [3]: https://www.gnu.org/software/make/
 [4]: https://gcc.gnu.org
+[5]: https://github.com/toml-lang/toml

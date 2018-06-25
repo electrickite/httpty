@@ -4,8 +4,9 @@ const https = require('https');
 
 module.exports = function(app, opts) {
   opts = Object.assign({port: 3000}, opts);
-  var server;
+  opts.port = parseInt(opts.port);
 
+  var server;
   if (opts.key && opts.cert) {
     server = https.createServer({
       key: fs.readFileSync(opts.key),

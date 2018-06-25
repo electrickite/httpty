@@ -10,6 +10,9 @@ module.exports = function(http, opts) {
     connections: 10,
     ping: 60
   }, opts);
+  opts.connections = parseInt(opts.connections);
+  opts.ping = parseInt(opts.ping);
+
 
   var wss = new WebSocket.Server({ server: http, path: '/ws' });
 

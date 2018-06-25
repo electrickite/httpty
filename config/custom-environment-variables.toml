@@ -1,0 +1,22 @@
+## Htty configuration => environment variable mapping ##
+
+timestamps = "CONSOLE_TIMESTAMPS"
+
+[server]
+port = "PORT"
+user = "NODE_USER"
+group = "NODE_GROUP"
+key = "KEY_PATH"
+cert = "CERT_PATH"
+
+[client]
+command = "CMD_PATH"
+connections = "CONNECTION_LIMIT"
+ping = "PING_INTERVAL"
+motd = "MOTD"
+
+[client.args]
+__name = "CMD_ARGS"
+__format = "json"
+# Note CMD_ARGS must be formatted as a JSON array of strings
+# Ex: CMD_ARGS='["-c", "cat /foo/bar"]'

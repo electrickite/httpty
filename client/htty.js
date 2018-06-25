@@ -49,7 +49,7 @@ Htty.prototype.end = function() {
   this.ws.close();
 };
 
-// Send line oof input to tty
+// Send line of input to tty
 Htty.prototype.input = function(line) {
   this._sendData(line + "\r");
 };
