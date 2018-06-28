@@ -25,6 +25,8 @@ HttPty.MSG = {
   RESIZE: '04'
 };
 
+HttPty.PROTOCOL = 'httpty';
+
 // Create a terminal emulator
 // Start socket connection when terminal is ready
 HttPty.prototype.start = function() {
@@ -60,7 +62,7 @@ HttPty.prototype.output = function(str) {
   this.term.io.println(str);
 };
 
-// Create web socket and event hanlers
+// Create web socket and event handlers
 HttPty.prototype._createWebSocket = function() {
   var self = this;
 
@@ -70,13 +72,19 @@ HttPty.prototype._createWebSocket = function() {
     return;
   }
 
-  this.ws = new WebSocket(this.socketUrl, ['httpty']);
+  this.ws = new WebSocket(this.socketUrl, HttPty.PROTOCOL);
 
   this.ws.onopen = function() {
-    console.log("Web socket connected");
-    self._initTerminal();
-    self._sendResize(self.term.screenSize.width, self.term.screenSize.height);
-    self.output("Terminal connected");
+    if (self.ws.protocol == HttPty.PROTOCOL) {
+      console.log("Web socket connected");
+      self._initTerminal();
+      self._sendResize(self.term.screenSize.width, self.term.screenSize.height);
+      self.output("Terminal connected");
+    } else {
+      console.error('Unsupported WebSocket subprotocol. Server must support: ' + HttPty.PROTOCOL);
+      self.output("Unsupported WebSocket protocol");
+      self.ws.close(4000, 'Unsupported protocol');
+    }
   };
 
   this.ws.onmessage = function(event) {
@@ -100,7 +108,7 @@ HttPty.prototype._createWebSocket = function() {
         break;
       case HttPty.MSG.ERROR:
         console.error('ERROR: ' + data);
-        self.output(data);
+        self.output('Error: ' + data);
         break;
       default:
         console.error('Unknown message type: ' + type);
@@ -117,7 +125,6 @@ HttPty.prototype._createWebSocket = function() {
     self.output('Terminal disconnected: refresh to reconnect');
     console.log('WebSocket connection closed:');
     console.log(event);
-    self.ws.close();
   };
 };
 

@@ -18,7 +18,7 @@ module.exports = function(http, opts) {
     server: http,
     path: '/ws',
     handleProtocols: function(protocols) {
-      return 'httpty';
+      return protocols.includes('httpty') ? 'httpty' : false;
     }
   });
 
@@ -39,7 +39,7 @@ module.exports = function(http, opts) {
     } else {
       console.log('CID=%s REJECT - Connection limit exceeded');
       client.error('Too many connections');
-      client.disconnect();
+      client.disconnect(1013, 'Too many connections');
     }
   });
 

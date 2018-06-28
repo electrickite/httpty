@@ -1,6 +1,9 @@
 const events = require('events');
 const pty = require('node-pty');
 const uuid = require('uuid/v4');
+const WebSocket = require('ws');
+
+const openStates = [WebSocket.CONNECTING, WebSocket.OPEN];
 
 function noop() {}
 
@@ -21,12 +24,10 @@ function Client(ws) {
   this.socket.on('error', function(err) {
     console.error('CID=%s SOCKET ERROR', self.id);
     console.error(err.stack);
-    self.socket.close();
   });
 
-  this.socket.on('close', function() {
-    console.log('CID=%s DISCONNECTED', self.id);
-    self.socket = null;
+  this.socket.on('close', function(code, reason) {
+    console.log('CID=%s DISCONNECTED %s %s', self.id, code, reason);
     self.disconnect();
   });
 
@@ -62,8 +63,7 @@ Client.prototype.startTty = function(cmd = '/bin/sh', args = []) {
 
   this.term.on('exit', function(code) {
     console.log("PID=%s EXITED", self.term.pid);
-    self.term = null;
-    self.disconnect();
+    self.disconnect(1000, 'pty process exited');
   });
 };
 
@@ -103,10 +103,7 @@ Client.prototype.receiveMessage = function(message) {
       this.input(data);
       break;
     case Client.MSG.RESIZE:
-      let size = data.split('|');
-      if (this.term._writable && size.length == 2) {
-        this.term.resize(parseInt(size[0]), parseInt(size[1]));
-      }
+      this.resizeTerminal(data);
       break;
     default:
       this.error('Unknown message type: ' + type);
@@ -123,9 +120,26 @@ Client.prototype.ping = function() {
   this.socket.ping(noop);
 };
 
-Client.prototype.disconnect = function() {
-  if (this.socket) { this.socket.close(); }
-  if (this.term) { this.term.end(); }
+Client.prototype.resizeTerminal = function(msg) {
+  let size = msg.split('|');
+  if (size.length != 2) {
+    this.error('Improperly formatted resize message');
+    return false;
+  }
+
+  if (this.term && this.term._writable) {
+    this.term.resize(parseInt(size[0]), parseInt(size[1]));
+  }
+};
+
+Client.prototype.disconnect = function(code = 1000, reason) {
+  if (this.socket && openStates.includes(this.socket.readyState)) {
+    this.socket.close(code, reason);
+  }
+  if (this.term) {
+    this.term.end();
+  }
+
   this.emit('disconnected');
   this.removeAllListeners('disconnected');
 };
