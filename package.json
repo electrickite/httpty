@@ -24,8 +24,8 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
-    "gulp-sourcemaps": "^2.6.4",
-    "gulp-uglify": "^3.0.0"
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2"
   },
   "optionalDependencies": {
     "bufferutil": "^3.0.5",
