@@ -149,5 +149,9 @@ HttPty.prototype._sendData = function(data) {
 
 // Send terminal resize message over socket
 HttPty.prototype._sendResize = function(col, row) {
-  this._sendMessage(col + '|' + row, HttPty.MSG.RESIZE);
+  if (!isNaN(col) && !isNaN(row)) {
+    this._sendMessage(col + '|' + row, HttPty.MSG.RESIZE);
+  } else {
+    return false;
+  }
 };

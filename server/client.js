@@ -127,8 +127,15 @@ Client.prototype.resizeTerminal = function(msg) {
     return false;
   }
 
+  let col = parseInt(size[0]);
+  let row = parseInt(size[1]);
+  if (isNaN(col) || isNaN(row)) {
+    this.error('Resize columns and rows must be numeric');
+    return false;
+  }
+
   if (this.term && this.term._writable) {
-    this.term.resize(parseInt(size[0]), parseInt(size[1]));
+    this.term.resize(Math.abs(col), Math.abs(row));
   }
 };
 

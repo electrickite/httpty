@@ -94,7 +94,7 @@ A JavaScript client implementation is included with the HttPty server project in
 
 # Copyright and License
 
-Copyright 2018 Corey Hinshaw
+Copyright 2021 Corey Hinshaw
 
 HttPty is made available under the terms of the MIT license, the full text of
 which can be found in the LICENSE file.
