@@ -1,7 +1,7 @@
 const events = require('events');
 const pty = require('node-pty');
-const uuid = require('uuid/v4');
 const WebSocket = require('ws');
+const { v4: uuid } = require('uuid');
 
 const openStates = [WebSocket.CONNECTING, WebSocket.OPEN];
 

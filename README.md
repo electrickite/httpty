@@ -10,8 +10,8 @@ client implementation.
 A Unix-like operating system. HttPty may work on other systems, but has not been
 tested. In addition, the following software is required:
 
-  * [Node.js][1] v10+
-  * [Python][2] 2.7
+  * [Node.js][1] v14+
+  * [Python][2] 3.7+
   * [make][3]
   * [GCC][4] or other C/C++ compiler
 
